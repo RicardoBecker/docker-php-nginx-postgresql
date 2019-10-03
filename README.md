@@ -1,111 +1,63 @@
-# Descrição
 
-Docker utilizando o composer, arquivo de configuração com variáveis de ambiente, criando um container nginx 1.17.4 e um container php 7.3.10-fpm ligados através de um link e criando um container postgres 11.5
+Environment with docker containers and file with setting environment variables.
+PHP 7.3.10-fpm
+Nginx 1.17.4
+PostgreSQL 11.5
 
-# Configuração Container Nginx
+# Setting Container Nginx
+ -> Expose ports:80 e 443
 
-1. Exposição de portas
-
-	80 e 443
-
-2. Volume (Obs: verificar se na configuração do docker os drivers estão compartilhados)
-
-	Aplicação: htdocs -> /var/www/html
+ -> Volumes (Obs: check in docker settings, if the drivers are shared): Aplicação:htdocs -> /var/www/html; Logs:nginx/logs -> /var/log/nginx; Virtual Host: nginx/sites -> /etc/nginx/conf.d
 	
-	Logs: nginx/logs -> /var/log/nginx
+ -> Virtual Host: You can create a vhost like http://api.dev 
+
+# PHP container configuration
+ -> Expose ports: 9000
+
+ -> Volume (Obs: check in docker settings, if the drivers are shared): Aplicação: htdocs -> /var/www/html
 	
-	Virtual Host: nginx/sites -> /etc/nginx/conf.d
+ -> Libraries: You can abble the php libraries in the settings file. Ex: MBSTRING, GD, MCRYPT, PDO_MYSQL, etc.
 	
-3. Virtual Host
+# PostgreSQL container configuration
+ -> Expose ports: 5432
 
-	Criação do vhost modelo http://api.dev (vhost modificável)
+ -> Volume (Obs: check in docker settings, if the drivers are shared): Aplicação: postgresql/data -> /var/lib/postgresql/data
 
-# Configuração Container Php
-
-1. Exposição de portas
-
-	9000
-
-2. Volume (Obs: verificar se na configuração do docker os drivers estão compartilhados)
-
-	Aplicação: htdocs -> /var/www/html
+ -> Connection settings: POSTGRES_DB = db_test; POSTGRES_USER = user_test; POSTGRES_PASSWORD = user_secret; POSTGRES_PORT = 5432;
 	
-3. Bibliotecas
+# How use
 
-	Habilitação de bibliotecas do php através de arquivo de configuração. Ex: MBSTRING, GD, MCRYPT, PDO_MYSQL, etc.
-	
-# Configuração Container Postgresql
-
-1. Exposição de portas
-
-	5432
-
-2. Volume (Obs: verificar se na configuração do docker os drivers estão compartilhados)
-
-	Aplicação: postgresql/data -> /var/lib/postgresql/data
-
-3. Configuração para conexão
-
-	- POSTGRES_DB       = teste
-	
-    - POSTGRES_USER     = root
-	
-    - POSTGRES_PASSWORD = root
-	
-    - POSTGRES_PORT     = 5432
-	
-# Como utitilizar
-
-1. Clonar o repositório usando o comando:
+-> Clone the repo:
 
    git clone 
 
-2. Entre na pasta php-nginx-postgresql e copie o arquivo env-example para .env
+-> Inside the folder "docker-php-nginx-postgresql" copy the file "env-example" and rename to ".env"
 
    cp env-example .env
 
-3. Rode seu container:
+-> Start the container:
 
    docker-compose up -d
 
-4. Adicione os domínios no arquivo de hosts.
+-> You can add the domains in the hosts file
 
    127.0.0.1 localhost
 
    127.0.0.1 api.dev
 
-5. Acessar o shell do container:
+-> Access the container shell:
     
-	docker exec -it nginx bash
+	Nginx: $ docker exec -it nginx bash
 
-	docker exec -it php-fpm bash
+	PHP: $ docker exec -it php-fpm bash
 	
-	docker exec -it postgresql bash
+	PostgreSQL: $ docker exec -it postgresql bash
 	
-6. Abra no navegador
+-> Open in the browser
 
-   http://localhost
+   http://localhost or http://localhost:PORT
 
-7. Acessar o banco de dados dentro do container Postgresql
+-> Access the database inside the container PostgreSQL
 
-	psql default default
-
-8. Comandos básicos para utilizar o banco de dados
-
-	\l;
-
-	CREATE DATABASE teste;
+	psql dbname username
 	
-	\connect teste;
-	
-	\dt;
-	
-	CREATE TABLE pessoa (id serial primary key, nome varchar(60) not null);
-	
-	INSERT INTO pessoa(nome) VALUES ('maria');
-
-	INSERT INTO pessoa(nome) VALUES ('joao');
-
-	INSERT INTO pessoa(nome) VALUES ('julia');
-
-	INSERT INTO pessoa(nome) VALUES ('pedro');
